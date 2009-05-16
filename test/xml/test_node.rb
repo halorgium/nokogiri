@@ -22,6 +22,18 @@ module Nokogiri
         assert_instance_of subclass, node
       end
 
+      def test_subclass_overriding_initialize
+        subclass = Class.new(Nokogiri::XML::Node) do
+          def initialize(name, doc, content)
+            super(name, doc)
+            self.content = content
+          end
+        end
+        node = subclass.new('foo', @xml, 'content')
+        assert_instance_of subclass, node
+        assert_equal 'content', node.content
+      end
+
       def test_namespace_goes_to_children
         fruits = Nokogiri::XML(<<-eoxml)
         <Fruit xmlns='www.fruits.org'>
